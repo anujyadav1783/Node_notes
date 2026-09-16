@@ -1,6 +1,10 @@
 const http = require('http');
 
-http.createServer((res, resp) => {
-    resp.write("<h1>hey i have started learning</h1>");
-    resp.end("hello");
-}).listen(4800);
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Hello this is anil sidhu!\n');
+});
+
+server.listen(4800, () => {
+  console.log('Server running at http://localhost:4800');
+});
