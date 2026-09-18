@@ -305,37 +305,10 @@ An API is a way for two software systems to communicate with each other.
 
 “JavaScript runs in the browser, but Node.js lets JavaScript run on the server. Node.js helps build APIs, connect to databases, and power the backend of modern apps.”
 
----
-
-## 15) Future Topics You Will Learn Next
-
-These are the next important Node.js topics:
-- Event loop
-- Non-blocking I/O
-- Asynchronous programming
-- Callbacks
-- Promises
-- async/await
-- Express.js
-- REST API
-- CRUD operations
-- Database connection (MongoDB, MySQL)
-- Middleware
-- Authentication
-- Authorization
-
-These concepts are natural next steps after understanding the basics.
-
----
-
+-
 ## 16) Final Summary
 
 Node.js is one of the most important tools in modern web development because it allows JavaScript to be used on the backend. It helps build APIs, work with databases, serve clients, and create full-stack applications. It is especially useful for real-time apps, backend logic, and communication between frontend and server.
-
-### One line to remember forever:
-Node.js brings JavaScript to the server and makes full-stack development possible.
-
----
 
 # Module in Node.js Notes
 
@@ -633,41 +606,7 @@ This command:
 
 ---
 
-## 12) What is this file? (`response.js`)
 
-This file is a basic Node.js server example.
-
-It uses the built-in `http` module to create a server and handle requests.
-
-### Basic idea:
-- `require('http')` loads the HTTP module
-- `http.createServer()` creates a server
-- callback receives the request and response objects
-- `res.write()` or `res.end()` sends a response to the client
-- `server.listen(port)` starts the server on a port
-
-### Example:
-```js
-const http = require('http');
-
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Server is running');
-});
-
-server.listen(3000, () => {
-  console.log('Server started on port 3000');
-});
-```
-
-### Meaning of request and response:
-- `req` = incoming request from the browser or client
-- `res` = outgoing response sent back by the server
-
-### Why this file is important:
-This is the first step in backend development. It teaches how a Node server receives requests and sends responses.
-
----
 
 ## 13) What is nodemon?
 
@@ -704,15 +643,3 @@ When building APIs, we keep changing code. nodemon helps us test the latest code
 
 ---
 
-## 14) Final Summary
-
-Node.js modules help us organize code and reuse functionality. The `http` module lets us create servers, listen on ports, and respond to client requests. This is the starting point of backend and API development in Node.js.
-
-`package.json` is the project configuration file that stores project details, scripts, and dependencies. It is very important because it helps manage installed packages and run the project easily.
-
-`response.js` is a basic Node server file that uses `http.createServer()` to handle requests and send responses.
-
-`nodemon` is a helper tool that automatically restarts the Node server when code changes, making development much faster.
-
-### Important line to remember:
-Modules help us organize code, package.json manages the project, and nodemon saves time by restarting the server automatically.
