@@ -1,0 +1,79 @@
+
+**CRUD = Create, Read, Update, Delete**
+
+Yaani files ke saath ye 4 basic operations karna.
+
+### 1. Create — File banana
+
+```js
+const fs = require('fs');
+
+fs.writeFileSync('data.txt', 'Hello World');
+
+console.log('File created');
+```
+
+* `writeFileSync()` → file create karta hai.
+* File already exist karti hai to content replace/overwrite kar deta hai.
+
+---
+
+### 2. Read — File ka data padhna
+
+```js
+const fs = require('fs');
+
+const data = fs.readFileSync('data.txt', 'utf-8');
+
+console.log(data);
+```
+
+`readFileSync()` file ke andar ka data return karta hai.
+
+Async version:
+
+```js
+fs.readFile('data.txt', 'utf-8', (err, data) => {
+    if (err) {
+        console.log(err);
+        return;
+    }
+
+    console.log(data);
+});
+```
+
+---
+
+### 3. Update — File mein data change/add karna
+
+Agar existing content ke **end mein data add** karna hai:
+
+```js
+fs.appendFileSync('data.txt', '\nNew Data');
+
+console.log('File updated');
+```
+
+`appendFileSync()` existing content ko remove nahi karta; end mein new content add karta hai.
+
+Agar **poora content replace** karna hai:
+
+```js
+fs.writeFileSync('data.txt', 'Updated Data');
+```
+
+---
+
+### 4. Delete — File delete karna
+
+```js
+fs.unlinkSync('data.txt');
+
+console.log('File deleted');
+```
+
+`unlinkSync()` file ko delete karta hai.
+
+---
+
