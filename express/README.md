@@ -339,6 +339,78 @@ Otherwise, Node may report that `import` cannot be used outside a module.
 
 Use `npm start` or `npm run dev` from the folder containing this project's `package.json`. To run the file directly from this folder, use `node app.js`.
 
+### Understanding the terminal output and Git line-ending warning
+
+When you run:
+
+```powershell
+node app.js
+```
+
+This message means the server started successfully:
+
+```text
+Server is running at http://localhost:3000
+```
+
+The server keeps running in that terminal while it waits for requests. Open the URL in a browser to use it. Press `Ctrl+C` in the terminal when you want to stop it.
+
+When you run `git add .` on Windows, Git may show a warning like:
+
+```text
+LF will be replaced by CRLF the next time Git touches it
+```
+
+This is a **line-ending warning**, not an Express or JavaScript error. LF is the newline format commonly used on Linux and macOS; CRLF is commonly used on Windows. Git is telling you that it may convert the file's line endings according to your Git settings. The warning does not mean `git add` failed, and it does not stop the server from running.
+
+The screenshot shows the server starting and then Git printing these warnings. The earlier stack trace is cut off, so its exact cause cannot be identified from the visible text alone; the later `Server is running...` message confirms that the displayed `node app.js` run did start the server.
+
+### Git push rejected: `fetch first`
+
+An error such as:
+
+```text
+! [rejected] main -> main (fetch first)
+Updates were rejected because the remote contains work that you do not have locally.
+```
+
+means the local `main` and GitHub's `main` have different commits. Git refuses the push so the remote commit is not accidentally overwritten. This is a Git history issue, not an Express code error and not the LF/CRLF warning.
+
+First check the current branch and changes:
+
+```powershell
+git status
+```
+
+If you have uncommitted work, commit the files you intend to keep or stash tracked changes before syncing. A normal stash does not include untracked files:
+
+```powershell
+git stash push -m "save work before syncing main"
+```
+
+Then bring down the remote commit and replay your local commit on top:
+
+```powershell
+git pull --rebase origin main
+```
+
+If Git reports a conflict, open each listed file, keep the intended changes, then mark it resolved and continue:
+
+```powershell
+git add <resolved-file>
+git rebase --continue
+```
+
+After the rebase succeeds, restore stashed work if you stashed any, check it, and push:
+
+```powershell
+git stash pop
+git status
+git push origin main
+```
+
+Do not use `git push --force` to get past this rejection; that can overwrite commits on GitHub. For this repository, local `main` has commit `296df30` (`this is express`) and fetched `origin/main` has a different commit `d69a38e` (`Updated`). Git reports that these commits can be combined without a conflict. Save the current uncommitted edits before running the sync commands.
+
 ### Port is already in use
 
 If another program is using port `3000`, the server cannot bind to it. Stop the other server or set a different `PORT`, as shown above.
