@@ -1,0 +1,6 @@
+export default function home(){
+    return '<h1>Home Page</h1>';
+}
+export function about(){
+    return '<h1>About Page</h1>';
+}
