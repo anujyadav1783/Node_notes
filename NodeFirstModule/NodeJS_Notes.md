@@ -3,7 +3,9 @@
 ## 1) What is Node.js?
 
 - Node.js is a JavaScript runtime environment.
-- It allows JavaScript to run outside the browser.
+- It allows JavaScript to run outside the browser
+
+- 
 - JavaScript was originally created for browsers, but Node.js made it possible to use JavaScript on the server.
 - Node.js runs on:
   - Windows
