@@ -1021,3 +1021,532 @@ Open `http://localhost:3000/`. The browser receives normal HTML; it does not see
 
 **Q: What is the difference between `res.sendFile()` and `res.render()`?**  
 **A:** `res.sendFile()` sends an existing file. `res.render()` fills a template with data and sends the generated HTML.
+
+## 20. Loop and condition in EJS
+
+EJS allows you to write JavaScript logic directly inside HTML templates. This is useful for showing different content based on values and rendering arrays of items.
+
+### Apply condition
+
+```ejs
+<% if (user.isAdmin) { %>
+  <h2>Welcome Admin</h2>
+<% } else { %>
+  <h2>Welcome User</h2>
+<% } %>
+```
+
+### Apply loop over array
+
+```ejs
+<ul>
+  <% users.forEach((user) => { %>
+    <li><%= user.name %> - <%= user.email %></li>
+  <% }); %>
+</ul>
+```
+
+### What is happening?
+
+- `if` checks a condition and displays different HTML.
+- `forEach()` loops through an array and prints each item.
+- `<% ... %>` runs JavaScript code.
+- `<%= ... %>` prints the result into the page.
+
+### Example with data
+
+```js
+app.get('/users', (req, res) => {
+  const users = [
+    { name: 'Anil', email: 'anil@test.com' },
+    { name: 'Peter', email: 'peter@test.com' }
+  ];
+
+  res.render('users', { users });
+});
+```
+
+```ejs
+<h1>User List</h1>
+<ul>
+  <% users.forEach((user) => { %>
+    <li><%= user.name %> : <%= user.email %></li>
+  <% }); %>
+</ul>
+```
+
+### Interview questions
+
+**Q: Why do we use EJS loops and conditions?**  
+**A:** To render dynamic content from data and show different UI based on conditions.
+
+**Q: What is the difference between `<% %>` and `<%= %>` in EJS?**  
+**A:** `<% %>` runs JavaScript without printing it. `<%= %>` prints the evaluated value to the page.
+
+## 21. MVC architecture with Node.js
+
+MVC stands for Model, View, and Controller.
+
+### What is MVC?
+
+- Model: represents your data and database logic.
+- View: shows the content to the user, usually HTML or EJS templates.
+- Controller: handles requests, gets data from the model, and sends it to the view.
+- Route: decides which controller function should run for a URL.
+
+### Why use MVC?
+
+MVC keeps code organized:
+
+- Models handle data.
+- Views handle UI.
+- Controllers handle logic between them.
+
+This makes the app easier to maintain and scale.
+
+### MVC flow in Node.js
+
+1. Browser sends a request to a route.
+2. Route calls the controller.
+3. Controller asks the model for data.
+4. Model returns data.
+5. Controller passes the data to the view.
+6. View renders the HTML page.
+
+### Simple MVC example
+
+#### `models/userModel.js`
+
+```js
+const userList = [
+  { name: 'Anil', age: 35, email: 'anil@test.com' },
+  { name: 'Peter', age: 12, email: 'peter@test.com' }
+];
+
+export function getUsers() {
+  return userList;
+}
+```
+
+#### `controllers/userController.js`
+
+```js
+import { getUsers } from '../models/userModel.js';
+
+export function handleUsers(req, res) {
+  const usersData = getUsers();
+  console.log(usersData);
+  res.render('user', { users: usersData });
+}
+```
+
+#### `views/user.ejs`
+
+```ejs
+<h1>User List</h1>
+<ul>
+  <% users.forEach((user) => { %>
+    <li><%= user.name %> - <%= user.email %></li>
+  <% }); %>
+</ul>
+```
+
+#### `index.js`
+
+```js
+import express from 'express';
+import { handleUsers } from './controllers/userController.js';
+
+const app = express();
+app.set('view engine', 'ejs');
+
+app.get('/users', handleUsers);
+
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
+```
+
+### Important point
+
+In MVC, the controller is the middle layer between the route and the view. It decides what data should be shown and sends it to the template.
+
+### Interview questions
+
+**Q: What is MVC architecture?**  
+**A:** MVC is a design pattern where the app is divided into Model, View, and Controller.
+
+**Q: What does the controller do?**  
+**A:** It receives requests, interacts with the model, and sends the result to the view.
+
+**Q: What is the role of the model?**  
+**A:** The model handles data and business logic.
+
+**Q: What is the role of the view?**  
+**A:** The view displays data to the user in HTML or a template.
+
+**Q: Why is MVC useful?**  
+**A:** It keeps code clean, organized, and easier to maintain.
+
+## 22. Coding practice: list users and profile route
+
+This is a very common Express pattern you should remember. It combines:
+
+- a `for` loop to create a list
+- dynamic URL params with `:name`
+- `req.params` to read the route value
+- `res.send()` to show output
+
+### Example
+
+```js
+import express from 'express';
+
+const app = express();
+
+app.get('/', (req, res) => {
+  const users = ['anil', 'sam', 'peter', 'sidhu'];
+  let data = '<ul>';
+
+  for (let i = 0; i < users.length; i++) {
+    data += `<li><a href="/user/${users[i]}">${users[i]}</a></li>`;
+  }
+
+  data += '</ul>';
+  res.send(data);
+});
+
+app.get('/user/:name', (req, res) => {
+  const userName = req.params.name;
+  res.send(`This is ${userName}'s profile page`);
+});
+
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
+```
+
+### What this code does
+
+1. `/` loads the home page.
+2. The `for` loop creates a list of names.
+3. Each name becomes a clickable link like `/user/anil`.
+4. `/user/:name` catches the URL parameter.
+5. `req.params.name` gives the clicked name.
+6. The server sends a personal profile message.
+
+### Important parts to remember
+
+- `app.get('/user/:name', ...)` defines a dynamic route.
+- `:name` means “any value here”.
+- `req.params.name` reads that value.
+- String interpolation is done with template literals: `` `...${value}...` ``.
+
+### Interview question
+
+**Q: What is `req.params` used for?**  
+**A:** It is used to read values sent in the URL, such as `/user/anil` where `name` is `anil`.
+
+**Q: Why do we use a loop in this example?**  
+**A:** To repeat the same HTML structure for every item in an array.
+
+### Quick revision snippet
+
+```js
+app.get('/user/:name', (req, res) => {
+  const name = req.params.name;
+  res.send(`Hello ${name}`);
+});
+```
+
+This is the simplest route-parameter pattern for Express.
+
+## 23. API example with dynamic route and filtering
+
+This is another very important Express pattern: using a dynamic route to fetch data by `id` or by name, then filtering an array with `.filter()`.
+
+### Example 1: filter by id
+
+```js
+import express from 'express';
+
+const app = express();
+
+const userData = [
+  { id: 1, name: 'anil', email: 'anil@test.com' },
+  { id: 2, name: 'sam', email: 'sam@test.com' },
+  { id: 3, name: 'peter', email: 'peter@test.com' }
+];
+
+app.get('/', (req, res) => {
+  console.log(userData);
+  res.send(userData);
+});
+
+app.get('/user/:id', (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+
+  const filteredData = userData.filter((user) => user.id == id);
+  res.send(filteredData);
+});
+
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
+```
+
+### What this does
+
+- `/` returns all users.
+- `/user/:id` reads a value from the URL.
+- `req.params.id` gives the number in the route.
+- `.filter()` keeps only objects whose `user.id` matches that value.
+
+### Example 2: filter by username
+
+```js
+app.get('/username/:name', (req, res) => {
+  const name = req.params.name;
+  console.log(name);
+
+  const filteredData = userData.filter(
+    (user) => user.name.toLowerCaseCase() === name.toLowerCase()
+  );
+
+  res.send(filteredData);
+});
+```
+
+### Correct version of the username filter
+
+```js
+app.get('/username/:name', (req, res) => {
+  const name = req.params.name;
+  console.log(name);
+
+  const filteredData = userData.filter(
+    (user) => user.name.toLowerCase() === name.toLowerCase()
+  );
+
+  res.send(filteredData);
+});
+```
+
+### Important points to remember
+
+- `req.params` is used for route values.
+- `.filter()` returns only matching items from an array.
+- `==` can be used for numeric comparison in simple cases, but `===` is generally safer in JavaScript.
+- Use `.toLowerCase()` when comparing names without worrying about uppercase/lowercase differences.
+
+### Interview questions
+
+**Q: Why do we use `.filter()` in Express routes?**  
+**A:** To return only the data matching a route parameter such as `id` or `name`.
+
+**Q: What is `req.params.id`?**  
+**A:** It reads the dynamic value from the URL, like `/user/2`.
+
+**Q: How do you compare usernames case-insensitively?**  
+**A:** Convert both sides to lowercase using `.toLowerCase()` before comparing.
+
+### Quick revision snippet
+
+```js
+app.get('/user/:id', (req, res) => {
+  const id = req.params.id;
+  const result = userData.filter((user) => user.id == id);
+  res.send(result);
+});
+```
+
+This pattern is frequently used in CRUD and API-based Express apps.
+
+## 24. MongoDB basics
+
+### Types of database
+
+There are different kinds of databases depending on data needs:
+
+- Relational Databases (RDBMS)
+- NoSQL Databases (MongoDB)
+- NewSQL Databases
+- Time Series Databases
+- Object-Oriented Databases
+- Graph Databases
+- Hierarchical Databases
+
+### What is MongoDB?
+
+MongoDB is a NoSQL database.
+
+- It stores data in a flexible document format instead of rows and tables.
+- Data is stored in JSON-like documents called BSON (Binary JSON).
+- It is easy to use for modern apps, APIs, and rapid development.
+
+### Why MongoDB?
+
+- Flexible schema
+- Stores data in key-value / document format
+- Good for large, changing data
+- Easy to scale horizontally
+- Common in Node.js applications
+
+### MongoDB basics and commands
+
+#### 1. Create database and use it
+
+```bash
+show dbs
+use school
+```
+
+#### 2. Create a collection
+
+```bash
+db.createCollection('students')
+```
+
+#### 3. Insert data
+
+```bash
+db.students.insertOne({ name: 'anil', age: 17, email: 'anil@test.com' })
+db.students.insertOne({ name: 'sam', age: 19, email: 'sam@test.com' })
+```
+
+#### 4. Read data
+
+```bash
+db.students.find()
+```
+
+#### 5. Update data
+
+```bash
+db.students.updateOne({ name: 'anil' }, { $set: { age: 20 } })
+```
+
+#### 6. Delete data
+
+```bash
+db.students.deleteOne({ name: 'sam' })
+```
+
+#### 7. Drop collection or database
+
+```bash
+db.students.drop()
+db.dropDatabase()
+```
+
+### Important MongoDB interview points
+
+- MongoDB stores data in collections, not tables.
+- A collection contains many documents.
+- A document is like a JSON object.
+- MongoDB uses `_id` automatically for each document.
+
+### Connect MongoDB with Node.js
+
+```js
+import express from 'express';
+import { MongoClient } from 'mongodb';
+
+const dbName = 'school';
+const url = 'mongodb://localhost:27017';
+const client = new MongoClient(url);
+
+async function dbConnection() {
+  await client.connect();
+  const db = client.db(dbName);
+  const collection = db.collection('students');
+
+  const result = await collection.find().toArray();
+  console.log(result);
+}
+
+dbConnection();
+
+const app = express();
+app.listen(3000);
+```
+
+### Full MongoDB + Express example
+
+```js
+import express from 'express';
+import { MongoClient } from 'mongodb';
+
+const app = express();
+const dbName = 'school';
+const url = 'mongodb://localhost:27017';
+const client = new MongoClient(url);
+
+async function dbConnection() {
+  await client.connect();
+  const db = client.db(dbName);
+  const collection = db.collection('students');
+
+  const result = await collection.find().toArray();
+  console.log(result);
+}
+
+app.get('/', async (req, res) => {
+  try {
+    await client.connect();
+    const db = client.db(dbName);
+    const collection = db.collection('students');
+    const result = await collection.find().toArray();
+    res.send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Database error');
+  }
+});
+
+dbConnection();
+
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
+```
+
+### Interview questions
+
+**Q: What is MongoDB?**  
+**A:** MongoDB is a NoSQL database that stores data in flexible JSON-like documents called BSON.
+
+**Q: What is the difference between a database and a collection?**  
+**A:** A database contains collections, and a collection contains many documents.
+
+**Q: What does `find()` do in MongoDB?**  
+**A:** It reads documents from a collection.
+
+**Q: How do you connect MongoDB with Node.js?**  
+**A:** Use `MongoClient` from the `mongodb` package and call `client.connect()`.
+
+**Q: Why is MongoDB used in Node.js projects?**  
+**A:** It works well with JavaScript, stores data as JSON-like objects, and is easy to integrate with APIs.
+
+### Quick revision snippet
+
+```js
+import { MongoClient } from 'mongodb';
+
+const url = 'mongodb://localhost:27017';
+const client = new MongoClient(url);
+
+async function dbConnection() {
+  await client.connect();
+  const db = client.db('school');
+  const collection = db.collection('students');
+  const result = await collection.find().toArray();
+  console.log(result);
+}
+
+dbConnection();
+```
+
+This is the most common MongoDB connection pattern in Node.js.
+

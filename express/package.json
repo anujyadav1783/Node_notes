@@ -2,7 +2,11 @@
   "type": "module",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "start:html": "node renderhtmlfile/app.js",
+    "dev:html": "nodemon renderhtmlfile/app.js",
+    "start:login": "node practis.js",
+    "dev:login": "nodemon practis.js"
   },
   "dependencies": {
     "express": "^5.3.0"
